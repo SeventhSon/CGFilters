@@ -1,6 +1,5 @@
 package application;
 
-import java.util.ArrayList;
 import javafx.scene.image.Image;
 import javafx.scene.image.PixelReader;
 import javafx.scene.image.PixelWriter;
@@ -8,7 +7,7 @@ import javafx.scene.image.WritableImage;
 
 public class CGService {
 
-	private ArrayList<Image> mChangeList;
+	private Image[] mChangeList;
 
 	private int mCurrentChange = -1;
 
@@ -26,7 +25,7 @@ public class CGService {
 	}
 
 	private CGService() {
-		mChangeList = new ArrayList<>();
+		mChangeList = new Image[256];
 	}
 
 	public Image functionalFilter(Image source, int[] lookupArray) {
@@ -84,17 +83,19 @@ public class CGService {
 		return contarr;
 	}
 
-	public void storeChange(Image img) {
-		mChangeList.add(img);
-		mCurrentChange++;
+	public synchronized void storeChange(Image img) {
+		mChangeList[++mCurrentChange]=img;
+		for(int i = mCurrentChange+1;i<mChangeList.length&&mChangeList[i]!=null;i++)
+			mChangeList[i]=null;
 	}
 
-	public Image undo() {
-		mChangeList.get(mCurrentChange);
-		return null;
+	public synchronized void undo() {
+		mCurrentChange--;
 	}
 
-	public Image redo() {
-		return null;
+	public synchronized void redo() {
+		if(mChangeList[mCurrentChange+1]!=null)
+			//Send image to display
+			mCurrentChange++;
 	}
 }

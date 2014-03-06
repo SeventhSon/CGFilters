@@ -10,7 +10,7 @@ import javafx.fxml.Initializable;
 import javafx.scene.control.Slider;
 import javafx.scene.control.TextField;
 
-public class PopupController implements Initializable {
+public class PopupFunctionalController implements Initializable {
 	@FXML
 	private Slider slider;
 

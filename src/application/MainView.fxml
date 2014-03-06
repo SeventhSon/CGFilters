@@ -14,7 +14,7 @@
 			preserveRatio="true" />
 	</center>
 	<top>
-		<MenuBar id="menu">
+		<MenuBar fx:id="menu" maxHeight="25">
 			<menus>
 				<Menu mnemonicParsing="false" text="File">
 					<items>
@@ -25,10 +25,10 @@
 						<MenuItem mnemonicParsing="false" text="Close" onAction="#close" />
 					</items>
 				</Menu>
-				<Menu disable="true" mnemonicParsing="false" text="Edit">
+				<Menu mnemonicParsing="false" text="Edit">
 					<items>
-						<MenuItem disable="false" mnemonicParsing="false" text="Undo" />
-						<MenuItem mnemonicParsing="false" text="Redo" />
+						<MenuItem disable="true" mnemonicParsing="false" text="Undo" />
+						<MenuItem disable="true" mnemonicParsing="false" text="Redo" />
 					</items>
 				</Menu>
 				<Menu fx:id="FiltersMenu" mnemonicParsing="false" disable="true"

@@ -78,7 +78,7 @@ public class MainController {
 		AnchorPane popup;
 		try {
 			popup = (AnchorPane) FXMLLoader.load(getClass().getResource(
-					"PopupFunctional.fxml"));
+					"PopupFunctionalView.fxml"));
 			Stage stage = new Stage();
 			stage.setTitle(title);
 			stage.setScene(new Scene(popup));
