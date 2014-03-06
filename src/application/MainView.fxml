@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import java.lang.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.image.*?>
+<?import javafx.scene.layout.*?>
+<?scenebuilder-stylesheet application.css?>
+
+<BorderPane fx:id="root" fx:controller="application.MainController"
+	minHeight="269.25" minWidth="275.0" xmlns:fx="http://javafx.com/fxml/1"
+	xmlns="http://javafx.com/javafx/2.2">
+	<center>
+		<ImageView fx:id="imageDisplay" pickOnBounds="true"
+			preserveRatio="true" />
+	</center>
+	<top>
+		<MenuBar id="menu">
+			<menus>
+				<Menu mnemonicParsing="false" text="File">
+					<items>
+						<MenuItem mnemonicParsing="false" text="Load image"
+							onAction="#loadImage" />
+						<MenuItem disable="true" mnemonicParsing="false" text="Save" />
+						<MenuItem disable="true" mnemonicParsing="false" text="Save As" />
+						<MenuItem mnemonicParsing="false" text="Close" onAction="#close" />
+					</items>
+				</Menu>
+				<Menu disable="true" mnemonicParsing="false" text="Edit">
+					<items>
+						<MenuItem disable="false" mnemonicParsing="false" text="Undo" />
+						<MenuItem mnemonicParsing="false" text="Redo" />
+					</items>
+				</Menu>
+				<Menu fx:id="FiltersMenu" mnemonicParsing="false" disable="true"
+					text="Filters">
+					<items>
+						<Menu mnemonicParsing="false" text="Functional">
+							<items>
+								<MenuItem mnemonicParsing="false" text="Contrast"
+									onAction="#contrast" />
+								<MenuItem mnemonicParsing="false" text="Brightness"
+									onAction="#brightness" />
+								<MenuItem mnemonicParsing="false" text="Gamma" />
+								<MenuItem mnemonicParsing="false" text="Inversion"
+									onAction="#inversion" />
+							</items>
+						</Menu>
+						<Menu mnemonicParsing="false" text="Convolution">
+							<items>
+								<MenuItem mnemonicParsing="false" text="Blur" />
+								<MenuItem mnemonicParsing="false" text="Gaussian Blur" />
+								<MenuItem mnemonicParsing="false" text="Sharpen" />
+								<MenuItem mnemonicParsing="false" text="Edge Detect" />
+								<MenuItem mnemonicParsing="false" text="Emboss" />
+							</items>
+						</Menu>
+					</items>
+				</Menu>
+			</menus>
+		</MenuBar>
+	</top>
+</BorderPane>
