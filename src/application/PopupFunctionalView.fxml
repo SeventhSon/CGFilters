@@ -20,7 +20,7 @@
 						<TextField fx:id="text" text="0" prefWidth="40.0" />
 					</children>
 				</HBox>
-				<Button mnemonicParsing="false" text="Ok" />
+				<Button mnemonicParsing="false" text="Ok" onAction="#ok" />
 			</children>
 		</VBox>
 	</children>

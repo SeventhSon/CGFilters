@@ -20,15 +20,15 @@
 					<items>
 						<MenuItem mnemonicParsing="false" text="Load image"
 							onAction="#loadImage" />
-						<MenuItem disable="true" mnemonicParsing="false" text="Save" />
-						<MenuItem disable="true" mnemonicParsing="false" text="Save As" />
+						<MenuItem mnemonicParsing="false" text="Save" onAction="#save"/>
+						<MenuItem mnemonicParsing="false" text="Save As" onAction="#saveAs"/>
 						<MenuItem mnemonicParsing="false" text="Close" onAction="#close" />
 					</items>
 				</Menu>
 				<Menu mnemonicParsing="false" text="Edit">
 					<items>
-						<MenuItem disable="true" mnemonicParsing="false" text="Undo" />
-						<MenuItem disable="true" mnemonicParsing="false" text="Redo" />
+						<MenuItem disable="true" onAction="#undo" mnemonicParsing="false" text="Undo" />
+						<MenuItem disable="true" onAction="#redo" mnemonicParsing="false" text="Redo" />
 					</items>
 				</Menu>
 				<Menu fx:id="FiltersMenu" mnemonicParsing="false" disable="true"
@@ -40,12 +40,12 @@
 									onAction="#contrast" />
 								<MenuItem mnemonicParsing="false" text="Brightness"
 									onAction="#brightness" />
-								<MenuItem mnemonicParsing="false" text="Gamma" />
+								<MenuItem mnemonicParsing="false" text="Gamma" onAction="#gamma" />
 								<MenuItem mnemonicParsing="false" text="Inversion"
 									onAction="#inversion" />
 							</items>
 						</Menu>
-						<Menu mnemonicParsing="false" text="Convolution">
+						<Menu disable="true" mnemonicParsing="false" text="Convolution">
 							<items>
 								<MenuItem mnemonicParsing="false" text="Blur" />
 								<MenuItem mnemonicParsing="false" text="Gaussian Blur" />

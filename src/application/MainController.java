@@ -2,11 +2,16 @@ package application;
 
 import java.io.File;
 import java.io.IOException;
+import java.net.URL;
+import java.util.ResourceBundle;
+import java.util.concurrent.locks.Lock;
+import java.util.concurrent.locks.ReentrantLock;
 
 import javafx.application.Platform;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
+import javafx.fxml.Initializable;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.Menu;
@@ -16,7 +21,7 @@ import javafx.scene.layout.AnchorPane;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
 
-public class MainController {
+public class MainController implements Initializable, ApplyFilterListener {
 	@FXML
 	private ImageView imageDisplay;
 	@FXML
@@ -26,16 +31,34 @@ public class MainController {
 
 	private CGService model;
 
+	private Lock mLock;
+
 	@FXML
 	private Menu FiltersMenu;
-
-	public MainController() {
-		model = CGService.getInstance();
-	}
 
 	@FXML
 	private void close(ActionEvent e) {
 		Platform.exit();
+	}
+
+	@FXML
+	private void save(ActionEvent e) {
+
+	}
+
+	@FXML
+	private void saveAs(ActionEvent e) {
+
+	}
+
+	@FXML
+	private void undo(ActionEvent e) {
+
+	}
+
+	@FXML
+	private void redo(ActionEvent e) {
+
 	}
 
 	@FXML
@@ -46,15 +69,18 @@ public class MainController {
 
 	@FXML
 	private void brightness(ActionEvent e) {
-		image = model.functionalFilter(image, model.getBrightness(-0.15f));
+		openFunctionalPopup("Set contrast", "brightness");
+	}
+
+	@FXML
+	private void gamma(ActionEvent e) {
+		// image = model.functionalFilter(image, model.getBrightness(-0.15f));
 		imageDisplay.setImage(image);
 	}
 
 	@FXML
 	private void contrast(ActionEvent e) {
-		openFunctionalPopup("Set contrast");
-		image = model.functionalFilter(image, model.getContrast(-0.1f));
-		imageDisplay.setImage(image);
+		openFunctionalPopup("Set contrast", "contrast");
 	}
 
 	@FXML
@@ -74,19 +100,54 @@ public class MainController {
 		}
 	}
 
-	private float openFunctionalPopup(String title) {
+	private float openFunctionalPopup(String title, String type) {
 		AnchorPane popup;
 		try {
-			popup = (AnchorPane) FXMLLoader.load(getClass().getResource(
-					"PopupFunctionalView.fxml"));
+			FXMLLoader fxmlLoader = new FXMLLoader();
+			popup = (AnchorPane) fxmlLoader.load(getClass().getResource(
+					"PopupFunctionalView.fxml").openStream());
+			PopupFunctionalController popupController = (PopupFunctionalController) fxmlLoader
+					.getController();
 			Stage stage = new Stage();
 			stage.setTitle(title);
 			stage.setScene(new Scene(popup));
+			popupController.setType(type);
 			stage.showAndWait();
 		} catch (IOException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 		return 0f;
 	}
+
+	@Override
+	public void onApplyFilter(ApplyFilterEvent applyFilterEvent) {
+		if (mLock.tryLock()) {
+			switch (applyFilterEvent.getType()) {
+			case "contrast":
+				imageDisplay
+						.setImage(model.functionalFilter(image, model
+								.getContrast((float) applyFilterEvent
+										.getFactor() / 200)));
+				break;
+			case "brightness":
+				imageDisplay.setImage(model.functionalFilter(image,
+						model.getBrightness((float) applyFilterEvent
+								.getFactor() / 100)));
+				break;
+			default:
+				break;
+			}
+			mLock.unlock();
+		}
+	}
+
+	@Override
+	public void initialize(URL location, ResourceBundle resources) {
+		mLock = new ReentrantLock();
+		model = CGService.getInstance();
+		EventDispatcher.getInstance().subscribe(this,
+				ApplyFilterEvent.class.toString());
+	}
+	
+	
 }

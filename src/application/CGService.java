@@ -10,6 +10,8 @@ public class CGService {
 	private Image[] mChangeList;
 
 	private int mCurrentChange = -1;
+	
+	private Image currentImage;
 
 	private static volatile CGService instance = null;
 
@@ -43,7 +45,8 @@ public class CGService {
 						| lookupArray[(argb >> 8) & 255] << 8
 						| lookupArray[argb & 255]);
 			}
-		}
+		}	
+		//storeChange(wi);
 		return wi;
 	}
 
@@ -72,7 +75,9 @@ public class CGService {
 	public int[] getContrast(float factor) {
 		int[] contarr = new int[256];
 
-		float slope = factor >= 0 ? factor * 20 : 1 / (-factor * 20);
+		float slope = factor*25;
+		if(slope<1)slope=1;
+		if(factor<0)slope = 1+factor;
 		for (int i = 0; i < 256; i++) {
 			contarr[i] = (int) ((i - 128) * slope + 128);
 			if (contarr[i] < 0)
@@ -84,18 +89,20 @@ public class CGService {
 	}
 
 	public synchronized void storeChange(Image img) {
-		mChangeList[++mCurrentChange]=img;
-		for(int i = mCurrentChange+1;i<mChangeList.length&&mChangeList[i]!=null;i++)
-			mChangeList[i]=null;
+		mChangeList[++mCurrentChange] = img;
+		for (int i = mCurrentChange + 1; i < mChangeList.length
+				&& mChangeList[i] != null; i++)
+			mChangeList[i] = null;
 	}
 
-	public synchronized void undo() {
-		mCurrentChange--;
+	public synchronized Image undo() {
+		return mChangeList[--mCurrentChange];
 	}
 
-	public synchronized void redo() {
-		if(mChangeList[mCurrentChange+1]!=null)
-			//Send image to display
-			mCurrentChange++;
+	public synchronized Image redo() {
+		if (mChangeList[mCurrentChange + 1] != null) {
+			return mChangeList[++mCurrentChange];
+		}
+		return null;
 	}
 }
