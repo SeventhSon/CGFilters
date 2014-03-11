@@ -21,7 +21,8 @@ import javafx.scene.layout.AnchorPane;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
 
-public class MainController implements Initializable, ApplyFilterListener {
+public class MainController implements Initializable, ApplyFilterListener,
+		ChangeListener, CustomFilterListener {
 	@FXML
 	private ImageView imageDisplay;
 	@FXML
@@ -62,6 +63,36 @@ public class MainController implements Initializable, ApplyFilterListener {
 	}
 
 	@FXML
+	private void blur(ActionEvent e) {
+		image = model.convolutionFilter(image, model.getBlur());
+		imageDisplay.setImage(image);
+	}
+
+	@FXML
+	private void gauss(ActionEvent e) {
+		image = model.convolutionFilter(image, model.getGauss());
+		imageDisplay.setImage(image);
+	}
+
+	@FXML
+	private void edge(ActionEvent e) {
+		image = model.convolutionFilter(image, model.getEdge());
+		imageDisplay.setImage(image);
+	}
+
+	@FXML
+	private void sharpen(ActionEvent e) {
+		image = model.convolutionFilter(image, model.getSharpen());
+		imageDisplay.setImage(image);
+	}
+
+	@FXML
+	private void emboss(ActionEvent e) {
+		image = model.convolutionFilter(image, model.getEmboss());
+		imageDisplay.setImage(image);
+	}
+
+	@FXML
 	private void inversion(ActionEvent e) {
 		image = model.functionalFilter(image, model.getInversion());
 		imageDisplay.setImage(image);
@@ -69,13 +100,26 @@ public class MainController implements Initializable, ApplyFilterListener {
 
 	@FXML
 	private void brightness(ActionEvent e) {
-		openFunctionalPopup("Set contrast", "brightness");
+		openFunctionalPopup("Set brightness", "brightness");
 	}
 
 	@FXML
-	private void gamma(ActionEvent e) {
-		// image = model.functionalFilter(image, model.getBrightness(-0.15f));
-		imageDisplay.setImage(image);
+	private void editor(ActionEvent e) {
+		FXMLLoader fxmlLoader = new FXMLLoader();
+		AnchorPane editor;
+		try {
+			editor = (AnchorPane) fxmlLoader.load(getClass().getResource(
+					"Editor.fxml").openStream());
+			EditorController editorController = (EditorController) fxmlLoader
+					.getController();
+			Stage stage = new Stage();
+			stage.setTitle("Functional filter editor");
+			stage.setScene(new Scene(editor));
+			stage.showAndWait();
+		} catch (IOException e1) {
+			// TODO Auto-generated catch block
+			e1.printStackTrace();
+		}
 	}
 
 	@FXML
@@ -134,6 +178,10 @@ public class MainController implements Initializable, ApplyFilterListener {
 						model.getBrightness((float) applyFilterEvent
 								.getFactor() / 100)));
 				break;
+			case "gamma":
+				imageDisplay.setImage(model.functionalFilter(image,
+						model.getGamma((float) applyFilterEvent.getFactor())));
+				break;
 			default:
 				break;
 			}
@@ -147,7 +195,33 @@ public class MainController implements Initializable, ApplyFilterListener {
 		model = CGService.getInstance();
 		EventDispatcher.getInstance().subscribe(this,
 				ApplyFilterEvent.class.toString());
+		EventDispatcher.getInstance().subscribe(this,
+				ChangeEvent.class.toString());
+		EventDispatcher.getInstance().subscribe(this,
+				CustomFilterEvent.class.toString());
 	}
-	
-	
+
+	@Override
+	public void onStoreChange(ChangeEvent changeEvent) {
+		image = imageDisplay.getImage();
+	}
+
+	@Override
+	public void onUndoChange(ChangeEvent changeEvent) {
+		// TODO Auto-generated method stub
+
+	}
+
+	@Override
+	public void onRedoChange(ChangeEvent changeEvent) {
+		// TODO Auto-generated method stub
+
+	}
+
+	@Override
+	public void onCustomFilter(CustomFilterEvent customFilterEvent) {
+		image = model.functionalFilter(image, customFilterEvent.getFilter());
+		imageDisplay.setImage(image);
+	}
+
 }

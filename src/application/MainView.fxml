@@ -40,18 +40,18 @@
 									onAction="#contrast" />
 								<MenuItem mnemonicParsing="false" text="Brightness"
 									onAction="#brightness" />
-								<MenuItem mnemonicParsing="false" text="Gamma" onAction="#gamma" />
+								<MenuItem mnemonicParsing="false" text="Editor" onAction="#editor" />
 								<MenuItem mnemonicParsing="false" text="Inversion"
 									onAction="#inversion" />
 							</items>
 						</Menu>
-						<Menu disable="true" mnemonicParsing="false" text="Convolution">
+						<Menu disable="false" mnemonicParsing="false" text="Convolution">
 							<items>
-								<MenuItem mnemonicParsing="false" text="Blur" />
-								<MenuItem mnemonicParsing="false" text="Gaussian Blur" />
-								<MenuItem mnemonicParsing="false" text="Sharpen" />
-								<MenuItem mnemonicParsing="false" text="Edge Detect" />
-								<MenuItem mnemonicParsing="false" text="Emboss" />
+								<MenuItem mnemonicParsing="false" text="Blur" onAction="#blur"/>
+								<MenuItem mnemonicParsing="false" text="Gaussian Blur" onAction="#gauss"/>
+								<MenuItem mnemonicParsing="false" text="Sharpen" onAction="#sharpen"/>
+								<MenuItem mnemonicParsing="false" text="Edge Detect" onAction="#edge"/>
+								<MenuItem mnemonicParsing="false" text="Emboss" onAction="#emboss"/>
 							</items>
 						</Menu>
 					</items>
