@@ -35,7 +35,7 @@ public class PopupFunctionalController implements Initializable {
 					return;
 				}
 				text.setText(Math.round(newValue.intValue()) + "");
-				eventBus.publish(new ApplyFilterEvent(mType, newValue.intValue()));
+				eventBus.publish(new ApplyFilterEvent(mType, newValue.floatValue()));
 			}
 		});
 	}
@@ -45,6 +45,12 @@ public class PopupFunctionalController implements Initializable {
 		((Stage)slider.getScene().getWindow()).close();
 	}
 
+	public void setRange(double min, double max, double avg){
+		slider.setMax(max);
+		slider.setMin(min);
+		slider.setValue(avg);
+	}
+	
 	public void setType(String type) {
 		mType = type; 
 	}

@@ -3,10 +3,10 @@ package application;
 public class ApplyFilterEvent extends Event {
 
 	private String mType;
-	private int mFactor;
+	private float mFactor;
 
-	public ApplyFilterEvent(String type, int factor) {
-		mFactor = factor;
+	public ApplyFilterEvent(String type, float f) {
+		mFactor = f;
 		mType = type;
 	}
 
@@ -14,7 +14,7 @@ public class ApplyFilterEvent extends Event {
 		return mType;
 	}
 
-	public int getFactor() {
+	public float getFactor() {
 		return mFactor;
 	}
 

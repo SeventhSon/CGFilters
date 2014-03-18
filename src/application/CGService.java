@@ -79,6 +79,24 @@ public class CGService {
 		return y * w + x;
 	}
 
+	public Image thresholdingFilter(Image source, int[] lookupArray) {
+		PixelReader pr = source.getPixelReader();
+		if (pr == null)
+			return null;
+		WritableImage wi = new WritableImage((int) source.getWidth(),
+				(int) source.getHeight());
+		PixelWriter pw = wi.getPixelWriter();
+		for (int y = 0; y < source.getHeight(); y++) {
+			for (int x = 0; x < source.getWidth(); x++) {
+				int argb = pr.getArgb(x, y);
+				argb = (int) (0.299*((argb >> 16)& 255)+0.587*((argb >> 8)& 255)+0.114*(argb & 255));
+				argb = lookupArray[argb];
+				pw.setArgb(x, y, 255 << 24 | argb << 16 | argb << 8 | argb);
+			}
+		}
+		return wi;
+	}
+	
 	public Image functionalFilter(Image source, int[] lookupArray) {
 		PixelReader pr = source.getPixelReader();
 		if (pr == null)
@@ -105,11 +123,11 @@ public class CGService {
 		return invarr;
 	}
 
-	public int[] getGamma(float factor) {
-		float gamma = (factor + 100 / 200) * 2.2f;
+	public int[] getGamma(float gamma) {
+		gamma = gamma / 100;
 		int[] gammarr = new int[256];
 		for (int i = 0; i < 256; i++) {
-			gammarr[i] = (int) Math.pow(i, gamma);
+			gammarr[i] = (int) (Math.pow((float) i / 255, gamma) * 255);
 			if (gammarr[i] > 255)
 				gammarr[i] = 255;
 		}
@@ -171,12 +189,12 @@ public class CGService {
 		return new float[][] { { 1.0f, 1f, 1.0f }, { 1f, 1f, 1f },
 				{ 1.0f, 1f, 1.0f }, { 9f, 0 } };
 	}
-	
+
 	public float[][] getGauss() {
 		return new float[][] { { 0.0f, 1f, 0.0f }, { 1f, 4f, 1f },
 				{ 0.0f, 1f, 0.0f }, { 8f, 0 } };
 	}
-	
+
 	public float[][] getSharpen() {
 		return new float[][] { { 0.0f, -1f, 0.0f }, { -1f, 5f, -1f },
 				{ 0.0f, -1f, 0.0f }, { 1f, 0 } };
@@ -190,5 +208,13 @@ public class CGService {
 	public float[][] getEdge() {
 		return new float[][] { { -1.0f, 0f, 0.0f }, { 0f, 1f, 0f },
 				{ 0.0f, 0f, 0.0f }, { 1f, 0 } };
+	}
+
+	public int[] getThresholding() {
+		int[] thresharr = new int[256];
+		for (int i = 0; i < 256; i++)
+			//thresharr[i] = i < 128 ? 0 : 0<<24|255<<16|255<<8|255;
+			thresharr[i] = i < 128 ? 0 : 255;
+		return thresharr;
 	}
 }

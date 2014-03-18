@@ -61,6 +61,16 @@ public class MainController implements Initializable, ApplyFilterListener,
 	private void redo(ActionEvent e) {
 
 	}
+	@FXML
+	private void gamma(ActionEvent e){
+		openFunctionalPopup("Set gamma correction", "gamma",0.01,300,100);
+	}
+	
+	@FXML
+	private void thresholding(ActionEvent e){
+		image = model.thresholdingFilter(image, model.getThresholding());
+		imageDisplay.setImage(image);
+	}
 
 	@FXML
 	private void blur(ActionEvent e) {
@@ -156,6 +166,26 @@ public class MainController implements Initializable, ApplyFilterListener,
 			stage.setTitle(title);
 			stage.setScene(new Scene(popup));
 			popupController.setType(type);
+			stage.showAndWait();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+		return 0f;
+	}
+	
+	private float openFunctionalPopup(String title, String type, double min, double max, double avg) {
+		AnchorPane popup;
+		try {
+			FXMLLoader fxmlLoader = new FXMLLoader();
+			popup = (AnchorPane) fxmlLoader.load(getClass().getResource(
+					"PopupFunctionalView.fxml").openStream());
+			PopupFunctionalController popupController = (PopupFunctionalController) fxmlLoader
+					.getController();
+			Stage stage = new Stage();
+			stage.setTitle(title);
+			stage.setScene(new Scene(popup));
+			popupController.setType(type);
+			popupController.setRange(min, max, avg);
 			stage.showAndWait();
 		} catch (IOException e) {
 			e.printStackTrace();

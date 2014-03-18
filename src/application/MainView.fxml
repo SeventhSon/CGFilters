@@ -5,6 +5,7 @@
 <?import javafx.scene.image.*?>
 <?import javafx.scene.layout.*?>
 <?scenebuilder-stylesheet application.css?>
+<?import javafx.scene.control.MenuItem?>
 
 <BorderPane fx:id="root" fx:controller="application.MainController"
 	minHeight="269.25" minWidth="275.0" xmlns:fx="http://javafx.com/fxml/1"
@@ -41,8 +42,11 @@
 								<MenuItem mnemonicParsing="false" text="Brightness"
 									onAction="#brightness" />
 								<MenuItem mnemonicParsing="false" text="Editor" onAction="#editor" />
+								<MenuItem mnemonicParsing="false" text="Gamma" onAction="#gamma" />
 								<MenuItem mnemonicParsing="false" text="Inversion"
 									onAction="#inversion" />
+								<MenuItem mnemonicParsing="false" text="Thersholding"
+									onAction="#thresholding" />
 							</items>
 						</Menu>
 						<Menu disable="false" mnemonicParsing="false" text="Convolution">

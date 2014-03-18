@@ -16,7 +16,7 @@
 			<children>
 				<HBox prefHeight="30.0" prefWidth="272.0">
 					<children>
-						<Slider fx:id="slider" prefWidth="233.0" max="100" value="0" min="-100" />
+						<Slider fx:id="slider" prefWidth="233.0"  max="100" value="0" min="-100" />
 						<TextField fx:id="text" text="0" prefWidth="40.0" />
 					</children>
 				</HBox>
