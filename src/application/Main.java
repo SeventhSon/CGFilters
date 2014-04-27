@@ -25,11 +25,11 @@ public class Main extends Application {
 			MenuBar mb = (MenuBar) root.lookup("#menu");
 			imgv.fitWidthProperty().bind(root.widthProperty());
 			imgv.fitHeightProperty().bind(
-					root.heightProperty().subtract(mb.getMaxHeight()));
+					root.heightProperty().subtract(mb.getMaxHeight()*2 + 6));
 			imgv.setImage(new Image(
 					"file:/home/guru/workspace/CGFilters/images/loading2.gif"));
-			primaryStage.setMinHeight(300);
-			primaryStage.setMinWidth(400);
+			primaryStage.setMinHeight(400);
+			primaryStage.setMinWidth(500);
 			primaryStage.setScene(scene);
 			primaryStage.setOnCloseRequest(new EventHandler<WindowEvent>() {
 				@Override

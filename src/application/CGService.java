@@ -1,5 +1,10 @@
 package application;
 
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Random;
+
+import javafx.geometry.Point2D;
 import javafx.scene.image.Image;
 import javafx.scene.image.PixelReader;
 import javafx.scene.image.PixelWriter;
@@ -29,7 +34,79 @@ public class CGService {
 		// mChangeList = new Image[256];
 	}
 
-	public Image convolutionFilter(Image source, float[][] kernel) {
+	public WritableImage getNewImage(int width, int height) {
+		WritableImage wi = new WritableImage(width, height);
+		return wi;
+	}
+
+	public void circle(WritableImage source, int x1, int y1, int x2, int y2) {
+		if (source == null)
+			return;
+		PixelWriter pw = source.getPixelWriter();
+		int argb = 255 << 24 | 0 << 16 | 0 << 8 | 0;
+		int R = (int) Math.sqrt((x2 - x1) * (x2 - x1) + (y2 - y1) * (y2 - y1));
+		int d = 1 - R;
+		int x = 0;
+		int y = R;
+		while (y > x) {
+			pw.setArgb(x + x1, y + y1, argb);
+			pw.setArgb(y + x1, x + y1, argb);
+			pw.setArgb(-x + x1, y + y1, argb);
+			pw.setArgb(-y + x1, x + y1, argb);
+			pw.setArgb(-x + x1, -y + y1, argb);
+			pw.setArgb(-y + x1, -x + y1, argb);
+			pw.setArgb(x + x1, -y + y1, argb);
+			pw.setArgb(y + x1, -x + y1, argb);
+			if (d < 0) // move to E
+				d += 2 * x + 3;
+			else // move to SE
+			{
+				d += 2 * x - 2 * y + 5;
+				--y;
+			}
+			++x;
+		}
+	}
+
+	public void line(WritableImage source, int x1, int y1, int x2, int y2) {
+		int argb = 255 << 24 | 0 << 16 | 0 << 8 | 0;
+		if(x2<x1){
+			int x = x2;
+			int y = y2;
+			x2=x1;
+			y2=y1;
+			x1=x;
+			y1=y;
+		}
+		int dx = Math.abs(x2 - x1);
+		int dy = Math.abs(y2 - y1);
+		int d = 2 * dy - dx;
+		int dE = 2 * dy;
+		int dNE = 2 * (dy - dx);
+		int xf = x1, yf = y1;
+		int xb = x2, yb = y2;
+		int sx = x1<x2?1:-1;
+		int sy = y1<y2?1:-1;
+		if (source == null)
+			return;
+		PixelWriter pw = source.getPixelWriter();
+		while (xf < xb) {
+			pw.setArgb(xf, yf, argb);
+			pw.setArgb(xb, yb, argb);
+
+			xf+=sx;
+			xb-=sx;
+			if (d < 0)
+				d += dE;
+			else {
+				d += dNE;
+				yf+=sy;
+				yb-=sy;
+			}
+		}
+	}
+
+	public WritableImage convolutionFilter(Image source, float[][] kernel) {
 		int sWidth = (int) source.getWidth();
 		int sHeight = (int) source.getHeight();
 		int w = 3;
@@ -79,7 +156,7 @@ public class CGService {
 		return y * w + x;
 	}
 
-	public Image thresholdingFilter(Image source, int[] lookupArray) {
+	public WritableImage thresholdingFilter(Image source, int[] lookupArray) {
 		PixelReader pr = source.getPixelReader();
 		if (pr == null)
 			return null;
@@ -89,15 +166,16 @@ public class CGService {
 		for (int y = 0; y < source.getHeight(); y++) {
 			for (int x = 0; x < source.getWidth(); x++) {
 				int argb = pr.getArgb(x, y);
-				argb = (int) (0.299*((argb >> 16)& 255)+0.587*((argb >> 8)& 255)+0.114*(argb & 255));
+				argb = (int) (0.299 * ((argb >> 16) & 255) + 0.587
+						* ((argb >> 8) & 255) + 0.114 * (argb & 255));
 				argb = lookupArray[argb];
 				pw.setArgb(x, y, 255 << 24 | argb << 16 | argb << 8 | argb);
 			}
 		}
 		return wi;
 	}
-	
-	public Image functionalFilter(Image source, int[] lookupArray) {
+
+	public WritableImage functionalFilter(Image source, int[] lookupArray) {
 		PixelReader pr = source.getPixelReader();
 		if (pr == null)
 			return null;
@@ -210,11 +288,100 @@ public class CGService {
 				{ 0.0f, 0f, 0.0f }, { 1f, 0 } };
 	}
 
+	public int[] getAverageDither(int k) {
+		int[] thresharr = new int[256];
+		int div = 256 / k;
+		int x = 0, z;
+		for (int i = 0; i < 256; i++) {
+			if (i > div) {
+				System.out.println("========" + div);
+				div += 256 / k;
+				x++;
+			}
+			z = (int) (x / (k - 1.0f) * 255.0f);
+			thresharr[i] = z > 255 ? 255 : z;
+			System.out.println(i + ": (" + x + ") " + thresharr[i]);
+		}
+		return thresharr;
+	}
+
 	public int[] getThresholding() {
 		int[] thresharr = new int[256];
 		for (int i = 0; i < 256; i++)
-			//thresharr[i] = i < 128 ? 0 : 0<<24|255<<16|255<<8|255;
+			// thresharr[i] = i < 128 ? 0 : 0<<24|255<<16|255<<8|255;
 			thresharr[i] = i < 128 ? 0 : 255;
 		return thresharr;
+	}
+
+	public WritableImage kmeansQuantization(Image source, int k) {
+
+		boolean isChanged = true;
+		Random rand = new Random();
+
+		int sWidth = (int) source.getWidth();
+		int sHeight = (int) source.getHeight();
+
+		int[] pixelData = new int[(int) (sWidth * sHeight)];
+
+		source.getPixelReader().getPixels(0, 0, sWidth, sHeight,
+				WritablePixelFormat.getIntArgbInstance(), pixelData, 0, sWidth);
+		WritableImage wi = new WritableImage((int) sWidth, (int) sHeight);
+
+		int[] argbPalette = new int[k];
+		for (int i = 0; i < k; i++)
+			argbPalette[i] = pixelData[rand.nextInt(pixelData.length)];
+
+		int[] pixelsToGroups = new int[pixelData.length];
+
+		int it = 0;
+		while (isChanged && it < 50) {
+			isChanged = false;
+			int[][] sumsCounts = new int[k][4];
+			for (int i = 0; i < pixelData.length; i++) {
+				int minIndex = -1;
+				int min = 99999999;
+				for (int j = 0; j < argbPalette.length; j++) {
+					if (min > distance(argbPalette[j], pixelData[i])) {
+						min = distance(argbPalette[j], pixelData[i]);
+						minIndex = j;
+					}
+				}
+				if (pixelsToGroups[i] != minIndex) {
+					pixelsToGroups[i] = minIndex;
+					isChanged = true;
+				}
+				sumsCounts[minIndex][0] += (pixelData[i] >> 16) & 255;
+				sumsCounts[minIndex][1] += (pixelData[i] >> 8) & 255;
+				sumsCounts[minIndex][2] += pixelData[i] & 255;
+				sumsCounts[minIndex][3]++;
+			}
+			for (int i = 0; i < argbPalette.length; i++)
+				if (sumsCounts[i][3] != 0)
+					argbPalette[i] = (255 << 24)
+							| ((sumsCounts[i][0] / sumsCounts[i][3]) << 16)
+							| ((sumsCounts[i][1] / sumsCounts[i][3]) << 8)
+							| (sumsCounts[i][2] / sumsCounts[i][3]);
+			it++;
+		}
+		System.out.println("Iterations " + it);
+		for (int i = 0; i < pixelData.length; i++)
+			pixelData[i] = argbPalette[pixelsToGroups[i]];
+
+		wi.getPixelWriter().setPixels(0, 0, sWidth, sHeight,
+				WritablePixelFormat.getIntArgbInstance(), pixelData, 0, sWidth);
+		return wi;
+	}
+
+	public int distance(int color1, int color2) {
+		int x1 = color1 >> 16 & 255;
+		int y1 = color1 >> 8 & 255;
+		int z1 = color1 & 255;
+
+		int x2 = color2 >> 16 & 255;
+		int y2 = color2 >> 8 & 255;
+		int z2 = color2 & 255;
+
+		return (int) Math.sqrt((x1 - x2) * (x1 - x2) + (y1 - y2) * (y1 - y2)
+				+ (z1 - z2) * (z1 - z2));
 	}
 }

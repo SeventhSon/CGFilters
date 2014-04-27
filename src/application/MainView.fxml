@@ -2,65 +2,68 @@
 
 <?import java.lang.*?>
 <?import javafx.scene.control.*?>
+<?import javafx.scene.control.MenuItem?>
 <?import javafx.scene.image.*?>
 <?import javafx.scene.layout.*?>
 <?scenebuilder-stylesheet application.css?>
-<?import javafx.scene.control.MenuItem?>
 
-<BorderPane fx:id="root" fx:controller="application.MainController"
-	minHeight="269.25" minWidth="275.0" xmlns:fx="http://javafx.com/fxml/1"
-	xmlns="http://javafx.com/javafx/2.2">
-	<center>
-		<ImageView fx:id="imageDisplay" pickOnBounds="true"
-			preserveRatio="true" />
-	</center>
-	<top>
-		<MenuBar fx:id="menu" maxHeight="25">
-			<menus>
-				<Menu mnemonicParsing="false" text="File">
-					<items>
-						<MenuItem mnemonicParsing="false" text="Load image"
-							onAction="#loadImage" />
-						<MenuItem mnemonicParsing="false" text="Save" onAction="#save"/>
-						<MenuItem mnemonicParsing="false" text="Save As" onAction="#saveAs"/>
-						<MenuItem mnemonicParsing="false" text="Close" onAction="#close" />
-					</items>
-				</Menu>
-				<Menu mnemonicParsing="false" text="Edit">
-					<items>
-						<MenuItem disable="true" onAction="#undo" mnemonicParsing="false" text="Undo" />
-						<MenuItem disable="true" onAction="#redo" mnemonicParsing="false" text="Redo" />
-					</items>
-				</Menu>
-				<Menu fx:id="FiltersMenu" mnemonicParsing="false" disable="true"
-					text="Filters">
-					<items>
-						<Menu mnemonicParsing="false" text="Functional">
-							<items>
-								<MenuItem mnemonicParsing="false" text="Contrast"
-									onAction="#contrast" />
-								<MenuItem mnemonicParsing="false" text="Brightness"
-									onAction="#brightness" />
-								<MenuItem mnemonicParsing="false" text="Editor" onAction="#editor" />
-								<MenuItem mnemonicParsing="false" text="Gamma" onAction="#gamma" />
-								<MenuItem mnemonicParsing="false" text="Inversion"
-									onAction="#inversion" />
-								<MenuItem mnemonicParsing="false" text="Thersholding"
-									onAction="#thresholding" />
-							</items>
-						</Menu>
-						<Menu disable="false" mnemonicParsing="false" text="Convolution">
-							<items>
-								<MenuItem mnemonicParsing="false" text="Blur" onAction="#blur"/>
-								<MenuItem mnemonicParsing="false" text="Gaussian Blur" onAction="#gauss"/>
-								<MenuItem mnemonicParsing="false" text="Sharpen" onAction="#sharpen"/>
-								<MenuItem mnemonicParsing="false" text="Edge Detect" onAction="#edge"/>
-								<MenuItem mnemonicParsing="false" text="Emboss" onAction="#emboss"/>
-							</items>
-						</Menu>
-					</items>
-				</Menu>
-			</menus>
-		</MenuBar>
-	</top>
+<BorderPane fx:id="root" minHeight="269.25" minWidth="275.0" xmlns:fx="http://javafx.com/fxml/1" xmlns="http://javafx.com/javafx/2.2" fx:controller="application.MainController">
+  <bottom>
+    <ToolBar orientation="HORIZONTAL">
+      <items>
+        <Button mnemonicParsing="false" onAction="#setMode" text="Line" />
+        <Button mnemonicParsing="false" onAction="#setMode" text="Circle" />
+        <Button defaultButton="true" onAction="#setMode" mnemonicParsing="false" text="Select" />
+      </items>
+    </ToolBar>
+  </bottom>
+  <center>
+    <ImageView fx:id="imageDisplay" pickOnBounds="true" preserveRatio="true" />
+  </center>
+  <top>
+    <MenuBar fx:id="menu" maxHeight="25.0">
+      <menus>
+        <Menu mnemonicParsing="false" text="File">
+          <items>
+            <MenuItem mnemonicParsing="false" onAction="#newImage" text="New" />
+            <MenuItem mnemonicParsing="false" onAction="#loadImage" text="Open" />
+            <MenuItem mnemonicParsing="false" disable="true" onAction="#save" text="Save" />
+            <MenuItem mnemonicParsing="false" disable="true" onAction="#saveAs" text="Save As" />
+            <MenuItem mnemonicParsing="false" onAction="#close" text="Close" />
+          </items>
+        </Menu>
+        <Menu mnemonicParsing="false" text="Edit">
+          <items>
+            <MenuItem disable="true" mnemonicParsing="false" onAction="#undo" text="Undo" />
+            <MenuItem disable="true" mnemonicParsing="false" onAction="#redo" text="Redo" />
+          </items>
+        </Menu>
+        <Menu disable="true" mnemonicParsing="false" text="Filters" fx:id="FiltersMenu">
+          <items>
+            <Menu mnemonicParsing="false" text="Functional">
+              <items>
+                <MenuItem mnemonicParsing="false" onAction="#contrast" text="Contrast" />
+                <MenuItem mnemonicParsing="false" onAction="#brightness" text="Brightness" />
+                <MenuItem mnemonicParsing="false" onAction="#editor" text="Editor" />
+                <MenuItem mnemonicParsing="false" onAction="#gamma" text="Gamma" />
+                <MenuItem mnemonicParsing="false" onAction="#inversion" text="Inversion" />
+                <MenuItem mnemonicParsing="false" onAction="#thresholding" text="Thersholding" />
+                <MenuItem mnemonicParsing="false" onAction="#averageDither" text="Average dither" />
+                <MenuItem mnemonicParsing="false" onAction="#kmeans" text="Kmeans Quantization" />
+              </items>
+            </Menu>
+            <Menu disable="false" mnemonicParsing="false" text="Convolution">
+              <items>
+                <MenuItem mnemonicParsing="false" onAction="#blur" text="Blur" />
+                <MenuItem mnemonicParsing="false" onAction="#gauss" text="Gaussian Blur" />
+                <MenuItem mnemonicParsing="false" onAction="#sharpen" text="Sharpen" />
+                <MenuItem mnemonicParsing="false" onAction="#edge" text="Edge Detect" />
+                <MenuItem mnemonicParsing="false" onAction="#emboss" text="Emboss" />
+              </items>
+            </Menu>
+          </items>
+        </Menu>
+      </menus>
+    </MenuBar>
+  </top>
 </BorderPane>

@@ -9,14 +9,19 @@ import java.util.concurrent.locks.ReentrantLock;
 
 import javafx.application.Platform;
 import javafx.event.ActionEvent;
+import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
+import javafx.geometry.Point2D;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
+import javafx.scene.control.Button;
 import javafx.scene.control.Menu;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
+import javafx.scene.image.WritableImage;
+import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.AnchorPane;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
@@ -28,14 +33,33 @@ public class MainController implements Initializable, ApplyFilterListener,
 	@FXML
 	private Parent root;
 
-	private Image image;
+	private WritableImage image;
 
 	private CGService model;
 
 	private Lock mLock;
 
+	private int mX = -1, mY = -1;
+
 	@FXML
 	private Menu FiltersMenu;
+
+	private String mMode = "Select";
+
+	@FXML
+	private void setMode(ActionEvent e) {
+		Button offender = (Button) e.getSource();
+		mMode = offender.getText();
+		mX = -1;
+		System.out.println(offender.getText());
+	}
+
+	@FXML
+	private void newImage(ActionEvent e) {
+		image = model.getNewImage(1024, 768);
+		imageDisplay.setImage(image);
+		FiltersMenu.setDisable(false);
+	}
 
 	@FXML
 	private void close(ActionEvent e) {
@@ -61,13 +85,25 @@ public class MainController implements Initializable, ApplyFilterListener,
 	private void redo(ActionEvent e) {
 
 	}
+
 	@FXML
-	private void gamma(ActionEvent e){
-		openFunctionalPopup("Set gamma correction", "gamma",0.01,300,100);
+	private void kmeans(ActionEvent e) {
+		image = model.kmeansQuantization(image, 16);
+		imageDisplay.setImage(image);
 	}
-	
+
 	@FXML
-	private void thresholding(ActionEvent e){
+	private void gamma(ActionEvent e) {
+		openFunctionalPopup("Set gamma correction", "gamma", 0.01, 300, 100);
+	}
+
+	@FXML
+	private void averageDither(ActionEvent e) {
+		openFunctionalPopup("Set average dithering", "averagedither", 2, 32, 2);
+	}
+
+	@FXML
+	private void thresholding(ActionEvent e) {
 		image = model.thresholdingFilter(image, model.getThresholding());
 		imageDisplay.setImage(image);
 	}
@@ -148,7 +184,9 @@ public class MainController implements Initializable, ApplyFilterListener,
 		File chosen = fileChooser.showOpenDialog((Stage) root.getScene()
 				.getWindow());
 		if (chosen != null) {
-			image = new Image("file:" + chosen.getPath());
+			Image loadee = new Image("file:" + chosen.getPath());
+			image = new WritableImage(loadee.getPixelReader(),
+					(int) loadee.getWidth(), (int) loadee.getHeight());
 			imageDisplay.setImage(image);
 			FiltersMenu.setDisable(false);
 		}
@@ -172,8 +210,9 @@ public class MainController implements Initializable, ApplyFilterListener,
 		}
 		return 0f;
 	}
-	
-	private float openFunctionalPopup(String title, String type, double min, double max, double avg) {
+
+	private float openFunctionalPopup(String title, String type, double min,
+			double max, double avg) {
 		AnchorPane popup;
 		try {
 			FXMLLoader fxmlLoader = new FXMLLoader();
@@ -212,6 +251,10 @@ public class MainController implements Initializable, ApplyFilterListener,
 				imageDisplay.setImage(model.functionalFilter(image,
 						model.getGamma((float) applyFilterEvent.getFactor())));
 				break;
+			case "averagedither":
+				imageDisplay.setImage(model.thresholdingFilter(image, model
+						.getAverageDither((int) applyFilterEvent.getFactor())));
+				break;
 			default:
 				break;
 			}
@@ -229,11 +272,38 @@ public class MainController implements Initializable, ApplyFilterListener,
 				ChangeEvent.class.toString());
 		EventDispatcher.getInstance().subscribe(this,
 				CustomFilterEvent.class.toString());
+		imageDisplay.addEventHandler(MouseEvent.MOUSE_CLICKED,
+				new EventHandler<MouseEvent>() {
+					@Override
+					public void handle(MouseEvent e) {
+						double scaleY = image.getHeight()
+								/ imageDisplay.fitHeightProperty()
+										.doubleValue();
+						if (mX == -1) {
+							if (!mMode.equals("Select")) {
+								mX = (int) (e.getX() * scaleY);
+								mY = (int) (e.getY() * scaleY);
+							}
+						} else {
+							if (mMode.equals("Line")) {
+								model.line(image, mX, mY,
+										(int) (e.getX() * scaleY),
+										(int) (e.getY() * scaleY));
+							} else if (mMode.equals("Circle")) {
+								model.circle(image, mX, mY,
+										(int) (e.getX() * scaleY),
+										(int) (e.getY() * scaleY));
+							}
+							mX = -1;
+							imageDisplay.setImage(image);
+						}
+					}
+				});
 	}
 
 	@Override
 	public void onStoreChange(ChangeEvent changeEvent) {
-		image = imageDisplay.getImage();
+		image = (WritableImage) imageDisplay.getImage();
 	}
 
 	@Override
