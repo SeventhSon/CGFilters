@@ -13,7 +13,8 @@
       <items>
         <Button mnemonicParsing="false" onAction="#setMode" text="Line" />
         <Button mnemonicParsing="false" onAction="#setMode" text="Circle" />
-        <Button defaultButton="true" onAction="#setMode" mnemonicParsing="false" text="Select" />
+        <TextField onAction="#setSize" prefWidth="36.0" />
+        <Button defaultButton="true" mnemonicParsing="false" onAction="#setMode" text="Select" />
       </items>
     </ToolBar>
   </bottom>
@@ -27,8 +28,8 @@
           <items>
             <MenuItem mnemonicParsing="false" onAction="#newImage" text="New" />
             <MenuItem mnemonicParsing="false" onAction="#loadImage" text="Open" />
-            <MenuItem mnemonicParsing="false" disable="true" onAction="#save" text="Save" />
-            <MenuItem mnemonicParsing="false" disable="true" onAction="#saveAs" text="Save As" />
+            <MenuItem disable="true" mnemonicParsing="false" onAction="#save" text="Save" />
+            <MenuItem disable="true" mnemonicParsing="false" onAction="#saveAs" text="Save As" />
             <MenuItem mnemonicParsing="false" onAction="#close" text="Close" />
           </items>
         </Menu>

@@ -16,6 +16,8 @@ public class CGService {
 	private Image[] mChangeList;
 
 	private int mCurrentChange = -1;
+	
+	private int SIZE = 0;
 
 	private static volatile CGService instance = null;
 
@@ -38,6 +40,10 @@ public class CGService {
 		WritableImage wi = new WritableImage(width, height);
 		return wi;
 	}
+	
+	public void setSize(int i){
+		SIZE = i;
+	}
 
 	public void circle(WritableImage source, int x1, int y1, int x2, int y2) {
 		if (source == null)
@@ -49,14 +55,14 @@ public class CGService {
 		int x = 0;
 		int y = R;
 		while (y > x) {
-			pw.setArgb(x + x1, y + y1, argb);
-			pw.setArgb(y + x1, x + y1, argb);
-			pw.setArgb(-x + x1, y + y1, argb);
-			pw.setArgb(-y + x1, x + y1, argb);
-			pw.setArgb(-x + x1, -y + y1, argb);
-			pw.setArgb(-y + x1, -x + y1, argb);
-			pw.setArgb(x + x1, -y + y1, argb);
-			pw.setArgb(y + x1, -x + y1, argb);
+			drawBrush(x + x1, y + y1, SIZE, argb, pw);
+			drawBrush(y + x1, x + y1, SIZE, argb, pw);
+			drawBrush(-x + x1, y + y1, SIZE, argb, pw);
+			drawBrush(-y + x1, x + y1, SIZE, argb, pw);
+			drawBrush(-x + x1, -y + y1, SIZE, argb, pw);
+			drawBrush(-y + x1, -x + y1, SIZE, argb, pw);
+			drawBrush(x + x1, -y + y1, SIZE, argb, pw);
+			drawBrush(y + x1, -x + y1, SIZE, argb, pw);
 			if (d < 0) // move to E
 				d += 2 * x + 3;
 			else // move to SE
@@ -69,40 +75,62 @@ public class CGService {
 	}
 
 	public void line(WritableImage source, int x1, int y1, int x2, int y2) {
-		int argb = 255 << 24 | 0 << 16 | 0 << 8 | 0;
-		if(x2<x1){
-			int x = x2;
-			int y = y2;
-			x2=x1;
-			y2=y1;
-			x1=x;
-			y1=y;
-		}
-		int dx = Math.abs(x2 - x1);
-		int dy = Math.abs(y2 - y1);
-		int d = 2 * dy - dx;
-		int dE = 2 * dy;
-		int dNE = 2 * (dy - dx);
-		int xf = x1, yf = y1;
-		int xb = x2, yb = y2;
-		int sx = x1<x2?1:-1;
-		int sy = y1<y2?1:-1;
 		if (source == null)
 			return;
 		PixelWriter pw = source.getPixelWriter();
-		while (xf < xb) {
-			pw.setArgb(xf, yf, argb);
-			pw.setArgb(xb, yb, argb);
 
-			xf+=sx;
-			xb-=sx;
-			if (d < 0)
-				d += dE;
-			else {
-				d += dNE;
-				yf+=sy;
-				yb-=sy;
+		int argb = 255 << 24 | 0 << 16 | 0 << 8 | 0;
+		
+		int sx = x1 < x2 ? 1 : -1;
+		int sy = y1 < y2 ? 1 : -1;
+		
+		int dx = Math.abs(x2 - x1);
+		int dy = Math.abs(y2 - y1);
+		
+		if (dy < dx ) {
+			int dE = 2 * dy;
+			int dNE = 2 * (dy - dx);
+			int d = 2 * dy - dx;
+			while ((x1 - x2)*sx < 0) {
+				drawBrush(x1, y1, SIZE, argb, pw);
+				drawBrush(x2, y2, SIZE, argb, pw);
+
+				x1 += sx;
+				x2 -= sx;
+				if (d < 0)
+					d += dE;
+				else {
+					d += dNE;
+					y1 += sy;
+					y2 -= sy;
+				}
 			}
+		} else {
+			int dE = 2 * dx;
+			int dNE = 2 * (dx - dy);
+			int d = 2 * dx - dy;
+			while ((y1 - y2)*sy < 0 ) {
+				drawBrush(x1, y1, SIZE, argb, pw);
+				drawBrush(x2, y2, SIZE, argb, pw);
+
+				y1 += sy;
+				y2 -= sy;
+				if (d < 0)
+					d += dE;
+				else {
+					d += dNE;
+					x1 += sx;
+					x2 -= sx;
+				}
+			}
+		}
+	}
+	
+	private void drawBrush(int x, int y, int size, int argb, PixelWriter pw){
+		pw.setArgb(x, y, argb);
+		for(int i=1;i<size+1;i++){
+			pw.setArgb(x, y-i, argb);
+			pw.setArgb(x, y+i, argb);
 		}
 	}
 

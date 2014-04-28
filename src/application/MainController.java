@@ -18,6 +18,7 @@ import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.Menu;
+import javafx.scene.control.TextField;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.image.WritableImage;
@@ -52,6 +53,12 @@ public class MainController implements Initializable, ApplyFilterListener,
 		mMode = offender.getText();
 		mX = -1;
 		System.out.println(offender.getText());
+	}
+
+	@FXML
+	private void setSize(ActionEvent e) {
+		TextField offender = (TextField) e.getSource();
+		model.setSize(Integer.parseInt(offender.getText()));
 	}
 
 	@FXML
