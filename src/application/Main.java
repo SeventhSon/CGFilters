@@ -9,7 +9,6 @@ import javafx.stage.WindowEvent;
 import javafx.scene.Scene;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.control.MenuBar;
-import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 
 public class Main extends Application {
@@ -23,11 +22,12 @@ public class Main extends Application {
 					getClass().getResource("application.css").toExternalForm());
 			ImageView imgv = (ImageView) root.lookup("#imageDisplay");
 			MenuBar mb = (MenuBar) root.lookup("#menu");
-			imgv.fitWidthProperty().bind(root.widthProperty());
-			imgv.fitHeightProperty().bind(
-					root.heightProperty().subtract(mb.getMaxHeight()*2 + 6));
-			imgv.setImage(new Image(
-					"file:/home/guru/workspace/CGFilters/images/loading2.gif"));
+			//imgv.fitWidthProperty().bind(root.widthProperty());
+			//imgv.fitHeightProperty().bind(
+			//		root.heightProperty().subtract(mb.getMaxHeight()*2 + 6));
+			//imgv.setImage(new Image(
+			//		"file:/home/guru/workspace/CGFilters/images/loading2.gif"));
+			imgv.autosize();
 			primaryStage.setMinHeight(400);
 			primaryStage.setMinWidth(500);
 			primaryStage.setScene(scene);

@@ -13,7 +13,6 @@ import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
-import javafx.geometry.Point2D;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
@@ -63,9 +62,10 @@ public class MainController implements Initializable, ApplyFilterListener,
 
 	@FXML
 	private void newImage(ActionEvent e) {
-		image = model.getNewImage(1024, 768);
+		image = model.getNewImage(1366, 768);
 		imageDisplay.setImage(image);
 		FiltersMenu.setDisable(false);
+		imageDisplay.autosize();
 	}
 
 	@FXML
@@ -197,6 +197,7 @@ public class MainController implements Initializable, ApplyFilterListener,
 			imageDisplay.setImage(image);
 			FiltersMenu.setDisable(false);
 		}
+		imageDisplay.autosize();
 	}
 
 	private float openFunctionalPopup(String title, String type) {
@@ -286,11 +287,17 @@ public class MainController implements Initializable, ApplyFilterListener,
 						double scaleY = image.getHeight()
 								/ imageDisplay.fitHeightProperty()
 										.doubleValue();
+						scaleY = 1;
 						if (mX == -1) {
 							if (!mMode.equals("Select")) {
 								mX = (int) (e.getX() * scaleY);
 								mY = (int) (e.getY() * scaleY);
-							}
+								if (mMode.equals("Fill")) {
+									model.fill(image, mX, mY);
+									mX = -1;
+								}
+							}else
+								model.scanline(image, (int)e.getX(), (int)e.getY());
 						} else {
 							if (mMode.equals("Line")) {
 								model.line(image, mX, mY,
@@ -302,6 +309,7 @@ public class MainController implements Initializable, ApplyFilterListener,
 										(int) (e.getY() * scaleY));
 							}
 							mX = -1;
+							//imageDisplay.setImage(model.msaa(image));
 							imageDisplay.setImage(image);
 						}
 					}
