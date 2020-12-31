@@ -7,29 +7,33 @@ import javafx.scene.image.WritableImage;
 import javafx.scene.paint.Color;
 
 public class CGUtils {
-    public static int encodeRGB(int R, int G, int B) {
-        return 255 << 24
-                | (int) Math
-                .min(Math.max(R, 0), 255) << 16
-                | (int) Math
-                .min(Math.max(G, 0), 255) << 8
-                | (int) Math
-                .min(Math.max(B, 0), 255);
+    public enum ClampingType {CLIP, WRAP}
+
+    public static int encodeARGB(int A, int R, int G, int B) {
+        return Math.min(Math.max(A, 0), 0xff) << 24
+                | Math.min(Math.max(R, 0), 0xff) << 16
+                | Math.min(Math.max(G, 0), 0xff) << 8
+                | Math.min(Math.max(B, 0), 0xff);
     }
 
-    public static int[] decodeRGB(int color) {
-        return new int[]{(color >> 16) & 255, (color >> 8) & 255, color & 255};
+    public static int[] decodeARGB(int color) {
+        return new int[]{(color >> 24) & 0xff, (color >> 16) & 0xff, (color >> 8) & 0xff, color & 0xff};
     }
 
-    public static int clamp(int x, int y, int w, int h) {
-        if (x < 0)
-            x = 0;
-        if (x >= w)
-            x = w - 1;
-        if (y < 0)
-            y = 0;
-        if (y >= h)
-            y = h - 1;
+    public static int clamp(int x, int y, int w, int h, ClampingType type) {
+        if (type == ClampingType.CLIP) {
+            if (x < 0)
+                x = 0;
+            else if (x >= w)
+                x = w - 1;
+            if (y < 0)
+                y = 0;
+            else if (y >= h)
+                y = h - 1;
+        } else {
+            x = (x + w) % w;
+            y = (y + h) % h;
+        }
         return y * w + x;
     }
 

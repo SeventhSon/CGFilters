@@ -1,36 +1,45 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
 <?scenebuilder-stylesheet application.css?>
-
-<?import javafx.scene.control.*?>
+<?import javafx.scene.canvas.Canvas?>
+<?import javafx.scene.control.Menu?>
+<?import javafx.scene.control.MenuBar?>
+<?import javafx.scene.control.MenuItem?>
+<?import javafx.scene.effect.Blend?>
 <?import javafx.scene.image.ImageView?>
 <?import javafx.scene.layout.BorderPane?>
-<BorderPane fx:id="root" minHeight="269.25" minWidth="275.0" xmlns:fx="http://javafx.com/fxml/1"
-            xmlns="http://javafx.com/javafx/2.2" fx:controller="application.ui.MainController">
+<?import javafx.scene.layout.StackPane?>
+
+<BorderPane fx:id="root" minHeight="269.25" minWidth="275.0" xmlns="http://javafx.com/javafx/15.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="application.ui.MainController">
     <center>
-        <ImageView fx:id="imageView" pickOnBounds="true" preserveRatio="true"/>
+        <StackPane prefHeight="150.0" prefWidth="200.0" BorderPane.alignment="CENTER">
+            <children>
+                <ImageView fx:id="imageView" pickOnBounds="true" preserveRatio="true" />
+                <Canvas fx:id="uiCanvas" pickOnBounds="true"/>
+            </children>
+        </StackPane>
     </center>
     <top>
         <MenuBar fx:id="menu" maxHeight="25.0">
             <menus>
-                <Menu mnemonicParsing="false" text="File">
+                <Menu fx:id="fileMenu" mnemonicParsing="false" text="File">
                     <items>
-                        <MenuItem mnemonicParsing="false" onAction="#loadImage" text="Open"/>
-                        <MenuItem disable="true" mnemonicParsing="false" onAction="#save" text="Save"/>
-                        <MenuItem disable="true" mnemonicParsing="false" onAction="#saveAs" text="Save As"/>
-                        <MenuItem mnemonicParsing="false" onAction="#close" text="Close"/>
+                        <MenuItem mnemonicParsing="false" onAction="#loadImage" text="Open" />
+                        <MenuItem fx:id="saveItem" disable="true" mnemonicParsing="false" onAction="#save" text="Save" />
+                        <MenuItem fx:id="saveAsItem" disable="true" mnemonicParsing="false" onAction="#saveAs" text="Save As" />
+                        <MenuItem mnemonicParsing="false" onAction="#close" text="Close" />
                     </items>
                 </Menu>
-                <Menu mnemonicParsing="false" text="Edit">
+                <Menu fx:id="editMenu" mnemonicParsing="false" text="Edit">
                     <items>
-                        <MenuItem disable="true" mnemonicParsing="false" onAction="#undo" text="Undo"/>
-                        <MenuItem disable="true" mnemonicParsing="false" onAction="#redo" text="Redo"/>
+                        <MenuItem disable="true" mnemonicParsing="false" onAction="#undo" text="Undo" />
+                        <MenuItem disable="true" mnemonicParsing="false" onAction="#redo" text="Redo" />
                     </items>
                 </Menu>
-                <Menu disable="true" mnemonicParsing="false" text="Filters" fx:id="FiltersMenu">
+                <Menu fx:id="filtersMenu" disable="true" mnemonicParsing="false" text="Filters">
                     <items>
-                        <MenuItem mnemonicParsing="false" onAction="#gauss" text="Gaussian Blur"/>
-                        <MenuItem mnemonicParsing="false" onAction="#unsharpen" text="Unsharpen"/>
+                        <MenuItem mnemonicParsing="false" onAction="#gauss" text="Gaussian Blur" />
+                        <MenuItem mnemonicParsing="false" onAction="#sharpen" text="Unsharp Mask" />
                     </items>
                 </Menu>
             </menus>

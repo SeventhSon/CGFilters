@@ -1,4 +1,7 @@
 out/
+build/
+.gradle/
+gradle/
 # built application files
 *.apk
 *.ap_

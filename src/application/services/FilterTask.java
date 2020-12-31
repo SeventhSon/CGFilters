@@ -1,54 +1,43 @@
 package application.services;
 
-import application.graphics.Filter;
 import javafx.scene.image.Image;
 import javafx.scene.image.WritableImage;
 
 public class FilterTask {
-    private Filter filter;
-    private Image image;
-    private Image result;
+    private Work work;
+    private WritableImage image;
+    private WritableImage result;
     private boolean canceled;
-    private ReadyCallback cb;
+    private CompleteCallback cb;
 
-    public FilterTask(Filter filter, Image image) {
-        this.filter = filter;
+    public interface Work {
+        WritableImage execute(Image image);
+    }
+
+    public FilterTask(Work work, WritableImage image) {
+        this.work = work;
         this.image = image;
         this.canceled = false;
     }
 
-    public Filter getFilter() {
-        return filter;
-    }
-
-    public synchronized void setFilter(Filter filter) {
-        this.filter = filter;
-    }
-
-    public Image getImage() {
-        return image;
-    }
-
-    public synchronized void setImage(Image image) {
-        this.image = image;
-    }
-
-    public synchronized void setResult(WritableImage result) {
-        this.result = result;
-        if(cb!=null)
+    public void run() {
+        this.result = work.execute(image);
+        if (cb != null && !canceled)
             cb.result(this.result);
     }
 
-    public boolean isCanceled() {
+    public synchronized boolean isCanceled() {
         return canceled;
     }
 
-    public void cancel() {
+    public synchronized void cancel() {
         if (!canceled)
             this.canceled = true;
     }
 
-    public void onReady(ReadyCallback cb){
+    public void onComplete(CompleteCallback cb) {
         this.cb = cb;
+        if (this.result!=null)
+            cb.result(this.result);
     }
 }

@@ -1,35 +1,43 @@
 package application;
 
+import application.services.CGService;
+import application.ui.MainController;
+import com.google.common.eventbus.EventBus;
 import javafx.application.Application;
 import javafx.application.Platform;
-import javafx.event.EventHandler;
 import javafx.fxml.FXMLLoader;
-import javafx.stage.Stage;
-import javafx.stage.WindowEvent;
 import javafx.scene.Scene;
-import javafx.scene.layout.BorderPane;
-import javafx.scene.control.MenuBar;
+import javafx.scene.canvas.Canvas;
 import javafx.scene.image.ImageView;
+import javafx.scene.layout.BorderPane;
+import javafx.stage.Stage;
 
 public class Main extends Application {
     @Override
     public void start(Stage primaryStage) {
         try {
-            BorderPane root = (BorderPane) FXMLLoader.load(getClass().getResource("ui/MainView.fxml"));
+            FXMLLoader fxmlLoader = new FXMLLoader();
+            BorderPane root = fxmlLoader.load(getClass().getResource("ui/MainView.fxml").openStream());
+            ImageView imageView = (ImageView) root.lookup("#imageView");
+            Canvas canvas = (Canvas) root.lookup("#uiCanvas");
+
             Scene scene = new Scene(root);
             scene.getStylesheets().add(getClass().getResource("ui/application.css").toExternalForm());
-            ImageView imageView = (ImageView) root.lookup("#imageView");
-//            imageView.fitWidthProperty().bind(primaryStage.widthProperty());
-            MenuBar mb = (MenuBar) root.lookup("#menu");
+//            canvas.widthProperty().bind(imageView.fitWidthProperty());
+
             primaryStage.setMinHeight(400);
             primaryStage.setMinWidth(500);
             primaryStage.setScene(scene);
-            primaryStage.setOnCloseRequest(new EventHandler<WindowEvent>() {
-                @Override
-                public void handle(WindowEvent event) {
-                    Platform.exit();
-                }
-            });
+            primaryStage.setOnCloseRequest(event -> Platform.exit());
+
+            CGService cgService = new CGService(imageView);
+            EventBus eventBus = new EventBus();
+            eventBus.register(cgService);
+
+            MainController controller = fxmlLoader.getController();
+            controller.init(eventBus, cgService);
+            eventBus.register(controller);
+
             primaryStage.show();
         } catch (Exception e) {
             e.printStackTrace();

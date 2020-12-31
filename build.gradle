@@ -1,0 +1,36 @@
+plugins {
+    id 'java'
+    id 'application'
+    id 'org.openjfx.javafxplugin' version '0.0.9'
+}
+
+javafx {
+    version = "15.0.1"
+    modules = ['javafx.controls', 'javafx.graphics', 'javafx.swing', 'javafx.base', 'javafx.fxml']
+}
+
+group 'org.example'
+version '1.0-SNAPSHOT'
+
+repositories {
+    mavenCentral()
+}
+sourceSets {
+    main {
+        java {
+            srcDirs = ['src']
+        }
+        resources {
+            srcDirs = ['src']
+            includes = ["**/*.fxml", "**/*.css"]
+        }
+    }
+}
+dependencies {
+    compile 'junit:junit:4.12'
+    implementation "com.google.guava:guava:30.1-jre"
+    compile group: 'org.openjfx', name: 'javafx-swing', version: '15'
+    compile group: 'org.apache.commons', name: 'commons-math3', version: '3.0'
+}
+
+mainClassName = 'application.Main'

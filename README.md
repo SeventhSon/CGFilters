@@ -1,4 +1,4 @@
 CGFilters
 =========
 
-Playing around with computer graphics and javafx
+JavaFX application for applying gaussian blur and unsharpMask convolutional filters

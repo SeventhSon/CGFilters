@@ -1,19 +1,18 @@
 package application.ui;
 
-import java.net.URL;
-import java.util.ResourceBundle;
-
-import application.services.CGService;
+import application.events.ImageEdit;
 import application.services.FilterTask;
+import com.google.common.eventbus.EventBus;
 import javafx.application.Platform;
-import javafx.beans.value.ChangeListener;
-import javafx.beans.value.ObservableValue;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.Slider;
 import javafx.scene.control.TextField;
 import javafx.stage.Stage;
+
+import java.net.URL;
+import java.util.ResourceBundle;
 
 public class PopupController implements Initializable {
     @FXML
@@ -22,9 +21,9 @@ public class PopupController implements Initializable {
     @FXML
     private TextField text;
 
-    private CGService service;
     private FilterCallback cb;
     private FilterTask current;
+    private EventBus eventBus;
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
@@ -39,17 +38,21 @@ public class PopupController implements Initializable {
                 current.cancel();
             }
             current = cb.filter(newValue.floatValue());
+            current.onComplete(result -> eventBus.post(new ImageEdit(ImageEdit.Type.PREVIEW, result)));
         });
     }
 
     public void ok(ActionEvent e) {
-        current.onReady((result) -> {
-            Platform.runLater(() -> ((Stage) slider.getScene().getWindow()).close());
+        current.onComplete((result) -> {
+            eventBus.post(new ImageEdit(ImageEdit.Type.COMMIT));
+            Platform.runLater(() -> {
+                ((Stage) slider.getScene().getWindow()).close();
+            });
         });
     }
 
-    public void init(CGService service, FilterCallback cb) {
+    public void init(FilterCallback cb, EventBus eventBus) {
+        this.eventBus = eventBus;
         this.cb = cb;
-        this.service = service;
     }
 }
